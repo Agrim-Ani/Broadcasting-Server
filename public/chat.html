@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broadcast — Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="chat-layout">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="nav-brand" style="font-size:0.9375rem;">&#128172; Broadcast</span>
+        <button class="btn-logout" id="logout-btn">Log out</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          <span>Rooms</span>
+          <button class="btn-new-room" id="new-room-btn" title="Create a room">+ New</button>
+        </div>
+        <ul class="room-list" id="room-list"></ul>
+      </div>
+
+      <div class="sidebar-section" id="members-section" style="display:none;">
+        <div class="sidebar-section-title">
+          <span>Members</span>
+          <span class="online-count" id="members-count">0</span>
+        </div>
+        <ul class="online-list" id="members-list"></ul>
+      </div>
+    </aside>
+
+    <!-- ── Chat area ── -->
+    <main class="chat-main">
+      <div class="chat-empty" id="chat-empty">
+        <div class="chat-empty-icon">&#128172;</div>
+        <p>Create or join a room to start chatting</p>
+      </div>
+
+      <div class="chat-active" id="chat-active">
+        <header class="chat-header">
+          <span class="chat-header-name" id="chat-header-name"></span>
+          <button class="btn-copy-link" id="copy-link-btn" title="Copy invite link">&#128279; Copy invite link</button>
+        </header>
+        <div class="messages-wrap" id="messages-wrap">
+          <ul class="messages-list" id="messages-list"></ul>
+        </div>
+        <div class="chat-input-row">
+          <textarea
+            class="chat-input"
+            id="chat-input"
+            placeholder="Message…"
+            rows="1"
+          ></textarea>
+          <button class="btn-send" id="send-btn">Send</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ── Create Room Modal ── -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-title">Create a Room</h2>
+      <div class="field">
+        <label for="room-name-input">Room name</label>
+        <input type="text" id="room-name-input" placeholder="e.g. Design team" maxlength="100" autocomplete="off" />
+      </div>
+      <p class="error-msg" id="modal-error"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="modal-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="modal-create-btn">Create Room</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>

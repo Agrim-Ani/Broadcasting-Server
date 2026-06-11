@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broadcast — Sign in</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <a href="index.html" class="auth-back">&#8592; Broadcast</a>
+
+    <div class="auth-card">
+      <h1 id="form-title">Sign in</h1>
+      <p class="subtitle" id="form-subtitle">Welcome back. Enter your credentials.</p>
+
+      <form id="auth-form" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" type="text" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button class="btn-primary" type="submit" id="submit-btn">Sign in</button>
+        <p class="error-msg" id="error-msg" aria-live="polite"></p>
+      </form>
+
+      <div class="toggle-link">
+        <span id="toggle-text">Don't have an account?</span>
+        <button id="toggle-btn" type="button">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

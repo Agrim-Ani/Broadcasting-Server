@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broadcast — Real-time Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-home">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <span class="nav-brand">&#128172; Broadcast</span>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">Open source &middot; Real-time &middot; No ads</div>
+    <h1 class="hero-title">Chat without the noise</h1>
+    <p class="hero-sub">
+      Broadcast is a lightweight real-time messenger. Send direct messages,
+      create group rooms, and see who's online — all from your browser,
+      no installs required.
+    </p>
+    <div class="hero-actions">
+      <a href="auth.html?mode=register" class="btn-primary">Get started free</a>
+      <a href="auth.html" class="btn-ghost">Log in</a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#9889;</div>
+      <h3>Real-time</h3>
+      <p>Messages land instantly via WebSocket — no polling, no delays.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128140;</div>
+      <h3>Direct messages</h3>
+      <p>Private one-on-one conversations, always encrypted in transit.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128101;</div>
+      <h3>Group rooms</h3>
+      <p>Create named rooms and invite as many people as you need.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#128994;</div>
+      <h3>Live presence</h3>
+      <p>See who's online right now. Presence updates the moment someone joins or leaves.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    Built with Node.js, Express &amp; WebSockets &middot; Phase 2 of 6
+  </footer>
+
+  <script>
+    // Skip landing page if already authenticated
+    if (localStorage.getItem('token')) {
+      window.location.replace('chat.html');
+    }
+  </script>
+</body>
+</html>
