@@ -180,8 +180,9 @@ body.page-home {
 .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* full-width variant for inside the auth form */
-form .btn-primary { width: 100%; margin-top: 0.5rem; }
+/* full-width variant for inside the auth form or join auth panel */
+form .btn-primary,
+#auth-submit-btn { width: 100%; margin-top: 0.5rem; }
 
 .btn-ghost {
   display: inline-block;

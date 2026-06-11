@@ -29,14 +29,20 @@ const messagesWrap   = document.getElementById('messages-wrap');
 const messagesList   = document.getElementById('messages-list');
 const chatInput      = document.getElementById('chat-input');
 const sendBtn        = document.getElementById('send-btn');
-const copyLinkBtn    = document.getElementById('copy-link-btn');
-const backBtn        = document.getElementById('back-btn');
-const newRoomBtn     = document.getElementById('new-room-btn');
-const modalBackdrop  = document.getElementById('modal-backdrop');
-const roomNameInput  = document.getElementById('room-name-input');
-const modalError     = document.getElementById('modal-error');
-const modalCancelBtn = document.getElementById('modal-cancel-btn');
-const modalCreateBtn = document.getElementById('modal-create-btn');
+const copyLinkBtn        = document.getElementById('copy-link-btn');
+const backBtn            = document.getElementById('back-btn');
+const newRoomBtn         = document.getElementById('new-room-btn');
+const joinRoomBtn        = document.getElementById('join-room-btn');
+const modalBackdrop      = document.getElementById('modal-backdrop');
+const roomNameInput      = document.getElementById('room-name-input');
+const modalError         = document.getElementById('modal-error');
+const modalCancelBtn     = document.getElementById('modal-cancel-btn');
+const modalCreateBtn     = document.getElementById('modal-create-btn');
+const joinModalBackdrop  = document.getElementById('join-modal-backdrop');
+const joinLinkInput      = document.getElementById('join-link-input');
+const joinModalError     = document.getElementById('join-modal-error');
+const joinModalCancelBtn = document.getElementById('join-modal-cancel-btn');
+const joinModalJoinBtn   = document.getElementById('join-modal-join-btn');
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
@@ -249,6 +255,64 @@ modalCreateBtn.addEventListener('click', async () => {
 
 roomNameInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); modalCreateBtn.click(); }
+});
+
+// ── Join Room modal ───────────────────────────────────────────────────────────
+
+// Accepts a full invite URL (https://…/join.html?code=xxx) or a bare code.
+function parseInviteCode(input) {
+  try {
+    const url = new URL(input.trim());
+    return url.searchParams.get('code');
+  } catch {
+    return input.trim() || null;
+  }
+}
+
+function openJoinModal() {
+  joinLinkInput.value        = '';
+  joinModalError.textContent = '';
+  joinModalBackdrop.style.display = 'flex';
+  joinLinkInput.focus();
+}
+
+function closeJoinModal() {
+  joinModalBackdrop.style.display = 'none';
+}
+
+joinRoomBtn.addEventListener('click', openJoinModal);
+joinModalCancelBtn.addEventListener('click', closeJoinModal);
+joinModalBackdrop.addEventListener('click', e => { if (e.target === joinModalBackdrop) closeJoinModal(); });
+
+joinLinkInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); joinModalJoinBtn.click(); }
+});
+
+joinModalJoinBtn.addEventListener('click', async () => {
+  const code = parseInviteCode(joinLinkInput.value);
+  if (!code) { joinModalError.textContent = 'Please enter an invite link or code.'; return; }
+
+  joinModalJoinBtn.disabled    = true;
+  joinModalJoinBtn.textContent = 'Joining…';
+  joinModalError.textContent   = '';
+
+  try {
+    const room = await apiFetch('/api/rooms/join', {
+      method: 'POST',
+      body:   JSON.stringify({ code }),
+    });
+    // Add to sidebar if not already present (user may be rejoining)
+    if (!state.rooms.find(r => r._id === room._id)) {
+      state.rooms.unshift(room);
+      renderRooms();
+    }
+    closeJoinModal();
+    openRoom(room._id);
+  } catch (err) {
+    joinModalError.textContent   = err.message;
+    joinModalJoinBtn.disabled    = false;
+    joinModalJoinBtn.textContent = 'Join Room';
+  }
 });
 
 // ── Copy invite link ──────────────────────────────────────────────────────────

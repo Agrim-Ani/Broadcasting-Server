@@ -19,7 +19,10 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title">
           <span>Rooms</span>
-          <button class="btn-new-room" id="new-room-btn" title="Create a room">+ New</button>
+          <div style="display:flex;gap:0.375rem;">
+            <button class="btn-new-room" id="join-room-btn" title="Join with invite link">Join</button>
+            <button class="btn-new-room" id="new-room-btn" title="Create a room">+ New</button>
+          </div>
         </div>
         <ul class="room-list" id="room-list"></ul>
       </div>
@@ -76,6 +79,22 @@
       <div class="modal-actions">
         <button class="btn-ghost" id="modal-cancel-btn">Cancel</button>
         <button class="btn-primary" id="modal-create-btn">Create Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Join Room Modal ── -->
+  <div class="modal-backdrop" id="join-modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-title">Join a Room</h2>
+      <div class="field">
+        <label for="join-link-input">Invite link or code</label>
+        <input type="text" id="join-link-input" placeholder="Paste invite link or code" autocomplete="off" />
+      </div>
+      <p class="error-msg" id="join-modal-error"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="join-modal-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="join-modal-join-btn">Join Room</button>
       </div>
     </div>
   </div>

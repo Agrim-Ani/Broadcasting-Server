@@ -4,15 +4,9 @@ const state = {
   loading: false,
 };
 
-// If already authenticated, send to chat (or back to the join page if that's where they came from)
+// If already authenticated, send straight to chat
 if (localStorage.getItem('token')) {
-  const pendingJoin = localStorage.getItem('pending_join');
-  if (pendingJoin) {
-    localStorage.removeItem('pending_join');
-    window.location.replace('join.html' + pendingJoin);
-  } else {
-    window.location.replace('chat.html');
-  }
+  window.location.replace('chat.html');
 }
 
 // Honour ?mode=register so the homepage "Get started" link opens the register form
@@ -59,15 +53,8 @@ function showError(msg) {
   errorEl.textContent = msg;
 }
 
-// After a successful auth, go back to the join page if that's where the user came from.
 function redirectAfterAuth() {
-  const pendingJoin = localStorage.getItem('pending_join');
-  if (pendingJoin) {
-    localStorage.removeItem('pending_join');
-    window.location.replace('join.html' + pendingJoin);
-  } else {
-    window.location.replace('chat.html');
-  }
+  window.location.replace('chat.html');
 }
 
 // POST to /api/login or /api/register; returns parsed JSON or throws with message

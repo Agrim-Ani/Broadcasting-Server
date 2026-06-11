@@ -10,22 +10,47 @@
   <div class="auth-wrap">
     <a href="index.html" class="auth-back">&#8592; Back</a>
 
-    <div class="auth-card" id="join-card">
-      <div id="join-loading">
-        <p style="color:var(--muted);font-size:0.9rem;">Loading room…</p>
-      </div>
+    <!-- Shown when user is not logged in -->
+    <div id="auth-panel" class="auth-card" style="display:none;">
+      <div class="join-icon">&#128172;</div>
+      <h1 style="font-size:1.25rem;margin-bottom:0.25rem;">You've been invited!</h1>
+      <p class="subtitle">Sign in or create an account to join the room.</p>
 
-      <div id="join-content" style="display:none;">
-        <div class="join-icon">&#128172;</div>
-        <h1 id="join-room-name"></h1>
-        <p class="subtitle" id="join-member-count"></p>
-        <button class="btn-primary" id="join-btn" style="width:100%;margin-top:1.5rem;">Join Room</button>
-        <p class="error-msg" id="error-msg"></p>
+      <div class="field">
+        <label for="j-username">Username</label>
+        <input type="text" id="j-username" placeholder="your_username" autocomplete="username" />
       </div>
+      <div class="field">
+        <label for="j-password">Password</label>
+        <input type="password" id="j-password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <p class="error-msg" id="auth-error"></p>
+      <button class="btn-primary" id="auth-submit-btn">Sign in</button>
+      <div class="toggle-link">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <button id="auth-toggle-btn">Register</button>
+      </div>
+    </div>
 
-      <div id="join-invalid" style="display:none;">
-        <p style="color:var(--error);font-size:0.9rem;">This invite link is invalid or has expired.</p>
-        <a href="chat.html" class="btn-primary" style="display:block;margin-top:1.5rem;text-align:center;">Go to Chat</a>
+    <!-- Shown when user is logged in (or after auth above) -->
+    <div id="join-panel" style="display:none;">
+      <div class="auth-card">
+        <div id="join-loading">
+          <p style="color:var(--muted);font-size:0.9rem;">Loading room…</p>
+        </div>
+
+        <div id="join-content" style="display:none;">
+          <div class="join-icon">&#128172;</div>
+          <h1 id="join-room-name"></h1>
+          <p class="subtitle" id="join-member-count"></p>
+          <button class="btn-primary" id="join-btn" style="width:100%;margin-top:1.5rem;">Join Room</button>
+          <p class="error-msg" id="join-error"></p>
+        </div>
+
+        <div id="join-invalid" style="display:none;">
+          <p style="color:var(--error);font-size:0.9rem;">This invite link is invalid or has expired.</p>
+          <a href="chat.html" class="btn-primary" style="display:block;margin-top:1.5rem;text-align:center;">Go to Chat</a>
+        </div>
       </div>
     </div>
   </div>
