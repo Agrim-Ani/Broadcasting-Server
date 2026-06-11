@@ -669,3 +669,78 @@ form .btn-primary { width: 100%; margin-top: 0.5rem; }
 }
 
 .auth-card h1 { margin-bottom: 0.25rem; }
+
+/* ── Chat header left group (back btn + room name) ── */
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.chat-header-left .chat-header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Mobile back button — hidden on desktop ── */
+.btn-back-mobile {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  transition: color 0.15s;
+}
+
+.btn-back-mobile:hover { color: var(--text); }
+
+/* ── Mobile layout ── */
+@media (max-width: 640px) {
+  .btn-back-mobile { display: flex; }
+
+  /* Stack sidebar and chat on top of each other; slide between them */
+  .chat-layout {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    overflow-y: auto;
+    transition: transform 0.25s ease;
+  }
+
+  .chat-main {
+    width: 100%;
+    position: absolute;
+    inset: 0;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+  }
+
+  /* Entering a room: slide sidebar left, chat in from right */
+  .chat-layout--in-room .sidebar { transform: translateX(-100%); }
+  .chat-layout--in-room .chat-main { transform: translateX(0); }
+
+  /* Tighten padding so the input row clears mobile browser chrome */
+  .chat-input-row { padding: 0.625rem 0.875rem; }
+
+  /* Single-column feature cards on homepage */
+  .features { grid-template-columns: 1fr; }
+
+  /* Auth back link — fixed offset breaks on narrow screens */
+  .auth-back { margin-left: 1rem; }
+
+  /* Modal fills the screen width with some breathing room */
+  .modal { margin: 1rem; max-width: calc(100% - 2rem); }
+}

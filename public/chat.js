@@ -17,6 +17,7 @@ const state = {
 };
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
+const chatLayout     = document.querySelector('.chat-layout');
 const roomList       = document.getElementById('room-list');
 const membersSection = document.getElementById('members-section');
 const membersList    = document.getElementById('members-list');
@@ -29,6 +30,7 @@ const messagesList   = document.getElementById('messages-list');
 const chatInput      = document.getElementById('chat-input');
 const sendBtn        = document.getElementById('send-btn');
 const copyLinkBtn    = document.getElementById('copy-link-btn');
+const backBtn        = document.getElementById('back-btn');
 const newRoomBtn     = document.getElementById('new-room-btn');
 const modalBackdrop  = document.getElementById('modal-backdrop');
 const roomNameInput  = document.getElementById('room-name-input');
@@ -129,12 +131,14 @@ function showChatArea() {
   chatEmpty.style.display  = 'none';
   chatActive.style.display = 'flex';
   membersSection.style.display = 'block';
+  chatLayout.classList.add('chat-layout--in-room');
 }
 
 function hideChatArea() {
   chatEmpty.style.display  = 'flex';
   chatActive.style.display = 'none';
   membersSection.style.display = 'none';
+  chatLayout.classList.remove('chat-layout--in-room');
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
@@ -267,6 +271,14 @@ document.getElementById('logout-btn').addEventListener('click', () => {
   window.location.replace('index.html');
 });
 
+// Mobile back button — returns to the room list without closing the WS.
+backBtn.addEventListener('click', () => {
+  state.activeRoomId  = null;
+  state.activeMembers = [];
+  renderRooms();
+  hideChatArea();
+});
+
 sendBtn.addEventListener('click', sendMessage);
 
 chatInput.addEventListener('keydown', e => {
@@ -325,6 +337,18 @@ function connect() {
         renderRooms();
       } else if (idx === -1) {
         loadRooms(); // message for a room we don't have yet — refresh list
+      }
+    }
+
+    if (msg.type === 'member_joined') {
+      const { roomId, member } = msg;
+      // Update the active room's member list without a full reload.
+      if (roomId === state.activeRoomId) {
+        const alreadyThere = state.activeMembers.some(m => m._id.toString() === member._id.toString());
+        if (!alreadyThere) {
+          state.activeMembers.push(member);
+          renderMembers();
+        }
       }
     }
   });

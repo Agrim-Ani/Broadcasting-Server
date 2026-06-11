@@ -3,6 +3,7 @@ const router = express.Router();
 const requireAuth = require('../middleware/auth');
 const Room = require('../models/Room');
 const Message = require('../models/Message');
+const registry = require('../ws/registry');
 
 // POST /api/rooms — create a new room; creator is auto-added as first member.
 router.post('/', requireAuth, async (req, res) => {
@@ -40,12 +41,29 @@ router.post('/join', requireAuth, async (req, res) => {
   const { code } = req.body;
   if (!code) return res.status(400).json({ error: 'code required' });
 
+  // Snapshot members before the update so we know who to notify and whether the join is new.
+  const before = await Room.findOne({ inviteCode: code }).lean();
+  if (!before) return res.status(404).json({ error: 'invalid invite code' });
+
+  const isNewMember = !before.members.some(m => m.toString() === req.user.userId);
+
   const room = await Room.findOneAndUpdate(
     { inviteCode: code },
     { $addToSet: { members: req.user.userId } },
     { returnDocument: 'after' }
   );
-  if (!room) return res.status(404).json({ error: 'invalid invite code' });
+
+  // Push a WS event to all existing members so their member panels update instantly.
+  if (isNewMember) {
+    const payload = {
+      type:     'member_joined',
+      roomId:   room._id.toString(),
+      member:   { _id: req.user.userId, username: req.user.username },
+    };
+    for (const memberId of before.members) {
+      registry.sendToUser(memberId.toString(), payload);
+    }
+  }
 
   res.json(room);
 });
