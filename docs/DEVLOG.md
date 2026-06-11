@@ -2,6 +2,31 @@
 
 ---
 
+## 2026-06-11 — Polish: Mongoose deprecation fix
+
+### What was built
+
+- Fixed Mongoose `findOneAndUpdate` deprecation warning in `server/routes/rooms.js`
+
+### Files touched
+
+```text
+server/routes/rooms.js
+```
+
+### Key decisions and why
+
+- **`new: true` → `returnDocument: 'after'`** — Mongoose 7+ deprecated the `new` option in favour of `returnDocument`, which maps directly to the MongoDB driver option. The behaviour is identical: return the document as it exists after the update is applied. The fix is a one-line swap with no logic change.
+
+### How to test manually
+
+```bash
+npm run dev
+# Start the server — the warning should no longer appear in the console
+```
+
+---
+
 ## 2026-06-11 — Phase 4 (revised): Rooms + Invite Links
 
 ### What was built

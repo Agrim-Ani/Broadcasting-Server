@@ -43,7 +43,7 @@ router.post('/join', requireAuth, async (req, res) => {
   const room = await Room.findOneAndUpdate(
     { inviteCode: code },
     { $addToSet: { members: req.user.userId } },
-    { new: true }
+    { returnDocument: 'after' }
   );
   if (!room) return res.status(404).json({ error: 'invalid invite code' });
 
