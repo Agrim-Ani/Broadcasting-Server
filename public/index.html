@@ -8,60 +8,124 @@
 </head>
 <body class="page-home">
 
+  <!-- Decorative background blobs -->
+  <div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
   <!-- Nav -->
   <nav class="nav">
-    <span class="nav-brand">&#128172; Broadcast</span>
+    <span class="nav-brand">&#9889; Broadcast</span>
+    <a href="auth.html" class="btn-nav">Sign in</a>
   </nav>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-badge">Open source &middot; Real-time &middot; No ads</div>
-    <h1 class="hero-title">Chat without the noise</h1>
+    <div class="hero-eyebrow">WebSocket-powered &middot; Open source</div>
+    <h1 class="hero-title">One message.<br>Everyone gets it.</h1>
     <p class="hero-sub">
-      Broadcast is a lightweight real-time messenger. Send direct messages,
-      create group rooms, and see who's online — all from your browser,
-      no installs required.
+      The idea is simple. Your message goes up to the server once — the server
+      sends copies down to everyone in the room at the same moment. That's a
+      broadcast server. This app is what that looks like when you put a UI around it.
     </p>
     <div class="hero-actions">
-      <a href="auth.html?mode=register" class="btn-primary">Get started free</a>
-      <a href="auth.html" class="btn-ghost">Log in</a>
+      <a href="auth.html?mode=register" class="btn-primary">Start chatting</a>
+      <a href="auth.html" class="btn-ghost">Sign in</a>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <h2 class="section-title">How it works</h2>
+    <div class="steps">
+
+      <div class="step animate-in">
+        <div class="step-num">01</div>
+        <h3 class="step-heading">You send a message</h3>
+        <p class="step-body">
+          Your browser keeps a WebSocket connection open — a persistent pipe to
+          the server. Hit send and the message travels through it immediately.
+          No HTTP round-trip, no handshake on every keystroke.
+        </p>
+      </div>
+
+      <div class="step-arrow" aria-hidden="true">&#8594;</div>
+
+      <div class="step animate-in" style="--delay:0.12s">
+        <div class="step-num">02</div>
+        <h3 class="step-heading">The server broadcasts it</h3>
+        <p class="step-body">
+          The server receives it once, then fans it out — writing a copy down
+          every open socket in that room at the same time. One message in,
+          many copies out. That's the broadcast part.
+        </p>
+      </div>
+
+      <div class="step-arrow" aria-hidden="true">&#8594;</div>
+
+      <div class="step animate-in" style="--delay:0.24s">
+        <div class="step-num">03</div>
+        <h3 class="step-heading">Everyone sees it now</h3>
+        <p class="step-body">
+          The message appears on every screen in the room at the same moment.
+          Nobody refreshed. Nobody polled. It just arrived.
+          That's the whole point.
+        </p>
+      </div>
+
     </div>
   </section>
 
   <!-- Features -->
-  <section class="features">
-    <div class="feature-card">
-      <div class="feature-icon">&#9889;</div>
-      <h3>Real-time</h3>
-      <p>Messages land instantly via WebSocket — no polling, no delays.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#128140;</div>
-      <h3>Direct messages</h3>
-      <p>Private one-on-one conversations, always encrypted in transit.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#128101;</div>
-      <h3>Group rooms</h3>
-      <p>Create named rooms and invite as many people as you need.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">&#128994;</div>
-      <h3>Live presence</h3>
-      <p>See who's online right now. Presence updates the moment someone joins or leaves.</p>
+  <section class="features-wrap">
+    <h2 class="section-title">What you get</h2>
+    <div class="features">
+
+      <div class="feature-card animate-in">
+        <div class="feature-icon">&#9889;</div>
+        <h3>Real-time delivery</h3>
+        <p>WebSocket, not polling. Messages land in milliseconds, not on the next interval tick.</p>
+      </div>
+
+      <div class="feature-card animate-in" style="--delay:0.1s">
+        <div class="feature-icon">&#128279;</div>
+        <h3>Invite links</h3>
+        <p>Share a link, not credentials. Anyone with it can preview the room and join with one click.</p>
+      </div>
+
+      <div class="feature-card animate-in" style="--delay:0.2s">
+        <div class="feature-icon">&#128994;</div>
+        <h3>Live presence</h3>
+        <p>Online indicators update the moment someone connects or drops. No stale state, ever.</p>
+      </div>
+
+      <div class="feature-card animate-in" style="--delay:0.3s">
+        <div class="feature-icon">&#128737;</div>
+        <h3>Room controls</h3>
+        <p>Owners can rename or delete rooms. Everyone else can leave. Clean by design.</p>
+      </div>
+
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    Built with Node.js, Express &amp; WebSockets &middot;
+    Built with Node.js, Express &amp; WebSockets
   </footer>
 
   <script>
-    // Skip landing page if already authenticated
-    if (localStorage.getItem('token')) {
-      window.location.replace('chat.html');
-    }
+    // Skip landing if already logged in
+    if (localStorage.getItem('token')) window.location.replace('chat.html');
+
+    // Trigger CSS transitions as elements scroll into view
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('animated'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
