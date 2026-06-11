@@ -68,6 +68,40 @@ router.post('/join', requireAuth, async (req, res) => {
   res.json(room);
 });
 
+// PATCH /api/rooms/:id — rename a room; only the creator may do this.
+router.patch('/:id', requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (!name?.trim()) return res.status(400).json({ error: 'name required' });
+
+  const room = await Room.findOneAndUpdate(
+    { _id: req.params.id, createdBy: req.user.userId },
+    { $set: { name: name.trim() } },
+    { returnDocument: 'after' }
+  ).lean();
+  if (!room) return res.status(403).json({ error: 'not found or not the owner' });
+
+  const payload = { type: 'room_updated', roomId: room._id.toString(), name: room.name };
+  for (const memberId of room.members) registry.sendToUser(memberId.toString(), payload);
+
+  res.json(room);
+});
+
+// DELETE /api/rooms/:id — delete a room and all its messages; only the creator may do this.
+router.delete('/:id', requireAuth, async (req, res) => {
+  const room = await Room.findOne({ _id: req.params.id, createdBy: req.user.userId }).lean();
+  if (!room) return res.status(403).json({ error: 'not found or not the owner' });
+
+  await Promise.all([
+    Room.deleteOne({ _id: req.params.id }),
+    Message.deleteMany({ roomId: req.params.id }),
+  ]);
+
+  const payload = { type: 'room_deleted', roomId: req.params.id };
+  for (const memberId of room.members) registry.sendToUser(memberId.toString(), payload);
+
+  res.status(204).send();
+});
+
 // GET /api/rooms/:id — full room details with populated member list.
 router.get('/:id', requireAuth, async (req, res) => {
   const room = await Room.findOne({ _id: req.params.id, members: req.user.userId })

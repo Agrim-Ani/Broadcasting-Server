@@ -49,7 +49,16 @@
             <button class="btn-back-mobile" id="back-btn">&#8592; Rooms</button>
             <span class="chat-header-name" id="chat-header-name"></span>
           </div>
-          <button class="btn-copy-link" id="copy-link-btn" title="Copy invite link">&#128279; Copy invite link</button>
+          <div class="chat-header-right">
+            <button class="btn-copy-link" id="copy-link-btn" title="Copy invite link">&#128279; Copy invite link</button>
+            <div class="settings-menu" id="settings-menu" style="display:none;">
+              <button class="btn-copy-link" id="settings-btn" title="Room settings">&#8943;</button>
+              <div class="settings-dropdown" id="settings-dropdown" style="display:none;">
+                <button class="settings-dropdown-item" id="rename-room-btn">&#9998; Rename room</button>
+                <button class="settings-dropdown-item settings-dropdown-item--danger" id="delete-room-btn">&#128465; Delete room</button>
+              </div>
+            </div>
+          </div>
         </header>
         <div class="messages-wrap" id="messages-wrap">
           <ul class="messages-list" id="messages-list"></ul>
@@ -79,6 +88,38 @@
       <div class="modal-actions">
         <button class="btn-ghost" id="modal-cancel-btn">Cancel</button>
         <button class="btn-primary" id="modal-create-btn">Create Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Rename Room Modal ── -->
+  <div class="modal-backdrop" id="rename-modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-title">Rename Room</h2>
+      <div class="field">
+        <label for="rename-room-input">Room name</label>
+        <input type="text" id="rename-room-input" maxlength="100" autocomplete="off" />
+      </div>
+      <p class="error-msg" id="rename-modal-error"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="rename-modal-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="rename-modal-save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Delete Room Modal ── -->
+  <div class="modal-backdrop" id="delete-modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-title">Delete Room</h2>
+      <p style="color:var(--muted);font-size:0.875rem;line-height:1.6;margin-bottom:0.25rem;">
+        Are you sure you want to delete <strong id="delete-modal-room-name"></strong>?
+        All messages will be permanently removed for everyone.
+      </p>
+      <p class="error-msg" id="delete-modal-error"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="delete-modal-cancel-btn">Cancel</button>
+        <button class="btn-danger" id="delete-modal-confirm-btn">Delete Room</button>
       </div>
     </div>
   </div>

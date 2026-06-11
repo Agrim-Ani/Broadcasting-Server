@@ -29,20 +29,35 @@ const messagesWrap   = document.getElementById('messages-wrap');
 const messagesList   = document.getElementById('messages-list');
 const chatInput      = document.getElementById('chat-input');
 const sendBtn        = document.getElementById('send-btn');
-const copyLinkBtn        = document.getElementById('copy-link-btn');
-const backBtn            = document.getElementById('back-btn');
-const newRoomBtn         = document.getElementById('new-room-btn');
-const joinRoomBtn        = document.getElementById('join-room-btn');
-const modalBackdrop      = document.getElementById('modal-backdrop');
-const roomNameInput      = document.getElementById('room-name-input');
-const modalError         = document.getElementById('modal-error');
-const modalCancelBtn     = document.getElementById('modal-cancel-btn');
-const modalCreateBtn     = document.getElementById('modal-create-btn');
-const joinModalBackdrop  = document.getElementById('join-modal-backdrop');
-const joinLinkInput      = document.getElementById('join-link-input');
-const joinModalError     = document.getElementById('join-modal-error');
-const joinModalCancelBtn = document.getElementById('join-modal-cancel-btn');
-const joinModalJoinBtn   = document.getElementById('join-modal-join-btn');
+const copyLinkBtn          = document.getElementById('copy-link-btn');
+const backBtn              = document.getElementById('back-btn');
+const newRoomBtn           = document.getElementById('new-room-btn');
+const joinRoomBtn          = document.getElementById('join-room-btn');
+const settingsMenu         = document.getElementById('settings-menu');
+const settingsBtn          = document.getElementById('settings-btn');
+const settingsDropdown     = document.getElementById('settings-dropdown');
+const renameRoomBtn        = document.getElementById('rename-room-btn');
+const deleteRoomBtn        = document.getElementById('delete-room-btn');
+const modalBackdrop        = document.getElementById('modal-backdrop');
+const roomNameInput        = document.getElementById('room-name-input');
+const modalError           = document.getElementById('modal-error');
+const modalCancelBtn       = document.getElementById('modal-cancel-btn');
+const modalCreateBtn       = document.getElementById('modal-create-btn');
+const renameModalBackdrop  = document.getElementById('rename-modal-backdrop');
+const renameRoomInput      = document.getElementById('rename-room-input');
+const renameModalError     = document.getElementById('rename-modal-error');
+const renameModalCancelBtn = document.getElementById('rename-modal-cancel-btn');
+const renameModalSaveBtn   = document.getElementById('rename-modal-save-btn');
+const deleteModalBackdrop  = document.getElementById('delete-modal-backdrop');
+const deleteModalRoomName  = document.getElementById('delete-modal-room-name');
+const deleteModalError     = document.getElementById('delete-modal-error');
+const deleteModalCancelBtn = document.getElementById('delete-modal-cancel-btn');
+const deleteModalConfirmBtn= document.getElementById('delete-modal-confirm-btn');
+const joinModalBackdrop    = document.getElementById('join-modal-backdrop');
+const joinLinkInput        = document.getElementById('join-link-input');
+const joinModalError       = document.getElementById('join-modal-error');
+const joinModalCancelBtn   = document.getElementById('join-modal-cancel-btn');
+const joinModalJoinBtn     = document.getElementById('join-modal-join-btn');
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function escapeHtml(str) {
@@ -68,6 +83,8 @@ async function apiFetch(url, options = {}) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || res.statusText);
   }
+  // 204 No Content has no body
+  if (res.status === 204) return null;
   return res.json();
 }
 
@@ -145,6 +162,8 @@ function hideChatArea() {
   chatActive.style.display = 'none';
   membersSection.style.display = 'none';
   chatLayout.classList.remove('chat-layout--in-room');
+  settingsMenu.style.display    = 'none';
+  settingsDropdown.style.display = 'none';
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────────
@@ -167,6 +186,11 @@ async function openRoom(roomId) {
   const room = state.rooms.find(r => r._id === roomId);
   chatHeaderName.textContent = room ? `# ${room.name}` : '…';
   showChatArea();
+
+  // Only the room creator sees the settings menu
+  const isOwner = room?.createdBy?.toString() === userId;
+  settingsMenu.style.display    = isOwner ? 'flex' : 'none';
+  settingsDropdown.style.display = 'none';
   chatInput.focus();
 
   // Load full room details (with member list) and messages in parallel
@@ -255,6 +279,85 @@ modalCreateBtn.addEventListener('click', async () => {
 
 roomNameInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); modalCreateBtn.click(); }
+});
+
+// ── Settings dropdown ─────────────────────────────────────────────────────────
+settingsBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const isOpen = settingsDropdown.style.display === 'block';
+  settingsDropdown.style.display = isOpen ? 'none' : 'block';
+});
+
+// Close dropdown when clicking anywhere outside it
+document.addEventListener('click', () => { settingsDropdown.style.display = 'none'; });
+settingsDropdown.addEventListener('click', e => e.stopPropagation());
+
+// ── Rename Room modal ─────────────────────────────────────────────────────────
+renameRoomBtn.addEventListener('click', () => {
+  settingsDropdown.style.display = 'none';
+  const room = state.rooms.find(r => r._id === state.activeRoomId);
+  renameRoomInput.value          = room?.name ?? '';
+  renameModalError.textContent   = '';
+  renameModalBackdrop.style.display = 'flex';
+  renameRoomInput.focus();
+  renameRoomInput.select();
+});
+
+function closeRenameModal() { renameModalBackdrop.style.display = 'none'; }
+
+renameModalCancelBtn.addEventListener('click', closeRenameModal);
+renameModalBackdrop.addEventListener('click', e => { if (e.target === renameModalBackdrop) closeRenameModal(); });
+renameRoomInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); renameModalSaveBtn.click(); } });
+
+renameModalSaveBtn.addEventListener('click', async () => {
+  const name = renameRoomInput.value.trim();
+  if (!name) { renameModalError.textContent = 'Room name is required.'; return; }
+
+  renameModalSaveBtn.disabled    = true;
+  renameModalSaveBtn.textContent = 'Saving…';
+  renameModalError.textContent   = '';
+
+  try {
+    await apiFetch(`/api/rooms/${state.activeRoomId}`, {
+      method: 'PATCH',
+      body:   JSON.stringify({ name }),
+    });
+    closeRenameModal();
+  } catch (err) {
+    renameModalError.textContent   = err.message;
+    renameModalSaveBtn.disabled    = false;
+    renameModalSaveBtn.textContent = 'Save';
+  }
+});
+
+// ── Delete Room modal ─────────────────────────────────────────────────────────
+deleteRoomBtn.addEventListener('click', () => {
+  settingsDropdown.style.display = 'none';
+  const room = state.rooms.find(r => r._id === state.activeRoomId);
+  deleteModalRoomName.textContent = room?.name ?? 'this room';
+  deleteModalError.textContent    = '';
+  deleteModalBackdrop.style.display = 'flex';
+});
+
+function closeDeleteModal() { deleteModalBackdrop.style.display = 'none'; }
+
+deleteModalCancelBtn.addEventListener('click', closeDeleteModal);
+deleteModalBackdrop.addEventListener('click', e => { if (e.target === deleteModalBackdrop) closeDeleteModal(); });
+
+deleteModalConfirmBtn.addEventListener('click', async () => {
+  deleteModalConfirmBtn.disabled    = true;
+  deleteModalConfirmBtn.textContent = 'Deleting…';
+  deleteModalError.textContent      = '';
+
+  try {
+    await apiFetch(`/api/rooms/${state.activeRoomId}`, { method: 'DELETE' });
+    closeDeleteModal();
+    // WS room_deleted event will clean up state and UI for all clients including this one
+  } catch (err) {
+    deleteModalError.textContent      = err.message;
+    deleteModalConfirmBtn.disabled    = false;
+    deleteModalConfirmBtn.textContent = 'Delete Room';
+  }
 });
 
 // ── Join Room modal ───────────────────────────────────────────────────────────
@@ -406,13 +509,33 @@ function connect() {
 
     if (msg.type === 'member_joined') {
       const { roomId, member } = msg;
-      // Update the active room's member list without a full reload.
       if (roomId === state.activeRoomId) {
         const alreadyThere = state.activeMembers.some(m => m._id.toString() === member._id.toString());
         if (!alreadyThere) {
           state.activeMembers.push(member);
           renderMembers();
         }
+      }
+    }
+
+    if (msg.type === 'room_updated') {
+      const { roomId, name } = msg;
+      const room = state.rooms.find(r => r._id === roomId);
+      if (room) {
+        room.name = name;
+        renderRooms();
+        if (roomId === state.activeRoomId) chatHeaderName.textContent = `# ${name}`;
+      }
+    }
+
+    if (msg.type === 'room_deleted') {
+      const { roomId } = msg;
+      state.rooms = state.rooms.filter(r => r._id !== roomId);
+      renderRooms();
+      if (roomId === state.activeRoomId) {
+        state.activeRoomId  = null;
+        state.activeMembers = [];
+        hideChatArea();
       }
     }
   });

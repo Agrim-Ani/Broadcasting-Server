@@ -671,6 +671,60 @@ form .btn-primary,
 
 .auth-card h1 { margin-bottom: 0.25rem; }
 
+/* ── Danger button ── */
+.btn-danger {
+  padding: 0.7rem 1.5rem;
+  background: var(--error);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-danger:hover:not(:disabled) { background: #c94f4f; }
+.btn-danger:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Settings dropdown ── */
+.chat-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.settings-menu { position: relative; }
+
+.settings-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 170px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.settings-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.settings-dropdown-item:hover { background: rgba(255,255,255,0.06); }
+.settings-dropdown-item--danger { color: var(--error); }
+.settings-dropdown-item--danger:hover { background: rgba(224,92,92,0.1); }
+
 /* ── Chat header left group (back btn + room name) ── */
 .chat-header-left {
   display: flex;
