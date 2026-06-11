@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broadcast — Join Room</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <a href="index.html" class="auth-back">&#8592; Back</a>
+
+    <div class="auth-card" id="join-card">
+      <div id="join-loading">
+        <p style="color:var(--muted);font-size:0.9rem;">Loading room…</p>
+      </div>
+
+      <div id="join-content" style="display:none;">
+        <div class="join-icon">&#128172;</div>
+        <h1 id="join-room-name"></h1>
+        <p class="subtitle" id="join-member-count"></p>
+        <button class="btn-primary" id="join-btn" style="width:100%;margin-top:1.5rem;">Join Room</button>
+        <p class="error-msg" id="error-msg"></p>
+      </div>
+
+      <div id="join-invalid" style="display:none;">
+        <p style="color:var(--error);font-size:0.9rem;">This invite link is invalid or has expired.</p>
+        <a href="chat.html" class="btn-primary" style="display:block;margin-top:1.5rem;text-align:center;">Go to Chat</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="join.js"></script>
+</body>
+</html>
