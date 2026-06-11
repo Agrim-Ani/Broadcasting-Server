@@ -312,7 +312,11 @@ renameRoomBtn.addEventListener('click', () => {
   renameRoomInput.select();
 });
 
-function closeRenameModal() { renameModalBackdrop.style.display = 'none'; }
+function closeRenameModal() {
+  renameModalBackdrop.style.display = 'none';
+  renameModalSaveBtn.disabled    = false;
+  renameModalSaveBtn.textContent = 'Save';
+}
 
 renameModalCancelBtn.addEventListener('click', closeRenameModal);
 renameModalBackdrop.addEventListener('click', e => { if (e.target === renameModalBackdrop) closeRenameModal(); });
@@ -348,7 +352,11 @@ deleteRoomBtn.addEventListener('click', () => {
   deleteModalBackdrop.style.display = 'flex';
 });
 
-function closeDeleteModal() { deleteModalBackdrop.style.display = 'none'; }
+function closeDeleteModal() {
+  deleteModalBackdrop.style.display = 'none';
+  deleteModalConfirmBtn.disabled    = false;
+  deleteModalConfirmBtn.textContent = 'Delete Room';
+}
 
 deleteModalCancelBtn.addEventListener('click', closeDeleteModal);
 deleteModalBackdrop.addEventListener('click', e => { if (e.target === deleteModalBackdrop) closeDeleteModal(); });
@@ -378,7 +386,11 @@ leaveRoomBtn.addEventListener('click', () => {
   leaveModalBackdrop.style.display = 'flex';
 });
 
-function closeLeaveModal() { leaveModalBackdrop.style.display = 'none'; }
+function closeLeaveModal() {
+  leaveModalBackdrop.style.display = 'none';
+  leaveModalConfirmBtn.disabled    = false;
+  leaveModalConfirmBtn.textContent = 'Leave Room';
+}
 
 leaveModalCancelBtn.addEventListener('click', closeLeaveModal);
 leaveModalBackdrop.addEventListener('click', e => { if (e.target === leaveModalBackdrop) closeLeaveModal(); });
