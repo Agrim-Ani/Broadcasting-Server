@@ -56,6 +56,7 @@
               <div class="settings-dropdown" id="settings-dropdown" style="display:none;">
                 <button class="settings-dropdown-item" id="rename-room-btn">&#9998; Rename room</button>
                 <button class="settings-dropdown-item settings-dropdown-item--danger" id="delete-room-btn">&#128465; Delete room</button>
+                <button class="settings-dropdown-item settings-dropdown-item--danger" id="leave-room-btn">&#8594; Leave room</button>
               </div>
             </div>
           </div>
@@ -120,6 +121,21 @@
       <div class="modal-actions">
         <button class="btn-ghost" id="delete-modal-cancel-btn">Cancel</button>
         <button class="btn-danger" id="delete-modal-confirm-btn">Delete Room</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Leave Room Modal ── -->
+  <div class="modal-backdrop" id="leave-modal-backdrop">
+    <div class="modal">
+      <h2 class="modal-title">Leave Room</h2>
+      <p style="color:var(--muted);font-size:0.875rem;line-height:1.6;margin-bottom:0.25rem;">
+        Leave <strong id="leave-modal-room-name"></strong>? You can rejoin anytime with an invite link.
+      </p>
+      <p class="error-msg" id="leave-modal-error"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="leave-modal-cancel-btn">Cancel</button>
+        <button class="btn-danger" id="leave-modal-confirm-btn">Leave Room</button>
       </div>
     </div>
   </div>

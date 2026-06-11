@@ -38,6 +38,7 @@ const settingsBtn          = document.getElementById('settings-btn');
 const settingsDropdown     = document.getElementById('settings-dropdown');
 const renameRoomBtn        = document.getElementById('rename-room-btn');
 const deleteRoomBtn        = document.getElementById('delete-room-btn');
+const leaveRoomBtn         = document.getElementById('leave-room-btn');
 const modalBackdrop        = document.getElementById('modal-backdrop');
 const roomNameInput        = document.getElementById('room-name-input');
 const modalError           = document.getElementById('modal-error');
@@ -53,6 +54,11 @@ const deleteModalRoomName  = document.getElementById('delete-modal-room-name');
 const deleteModalError     = document.getElementById('delete-modal-error');
 const deleteModalCancelBtn = document.getElementById('delete-modal-cancel-btn');
 const deleteModalConfirmBtn= document.getElementById('delete-modal-confirm-btn');
+const leaveModalBackdrop   = document.getElementById('leave-modal-backdrop');
+const leaveModalRoomName   = document.getElementById('leave-modal-room-name');
+const leaveModalError      = document.getElementById('leave-modal-error');
+const leaveModalCancelBtn  = document.getElementById('leave-modal-cancel-btn');
+const leaveModalConfirmBtn = document.getElementById('leave-modal-confirm-btn');
 const joinModalBackdrop    = document.getElementById('join-modal-backdrop');
 const joinLinkInput        = document.getElementById('join-link-input');
 const joinModalError       = document.getElementById('join-modal-error');
@@ -187,10 +193,13 @@ async function openRoom(roomId) {
   chatHeaderName.textContent = room ? `# ${room.name}` : '…';
   showChatArea();
 
-  // Only the room creator sees the settings menu
+  // Show the settings menu for all members; toggle which items are visible by role.
   const isOwner = room?.createdBy?.toString() === userId;
-  settingsMenu.style.display    = isOwner ? 'flex' : 'none';
+  settingsMenu.style.display     = 'flex';
   settingsDropdown.style.display = 'none';
+  renameRoomBtn.style.display    = isOwner ? 'block' : 'none';
+  deleteRoomBtn.style.display    = isOwner ? 'block' : 'none';
+  leaveRoomBtn.style.display     = isOwner ? 'none'  : 'block';
   chatInput.focus();
 
   // Load full room details (with member list) and messages in parallel
@@ -360,6 +369,41 @@ deleteModalConfirmBtn.addEventListener('click', async () => {
   }
 });
 
+// ── Leave Room modal ──────────────────────────────────────────────────────────
+leaveRoomBtn.addEventListener('click', () => {
+  settingsDropdown.style.display = 'none';
+  const room = state.rooms.find(r => r._id === state.activeRoomId);
+  leaveModalRoomName.textContent = room?.name ?? 'this room';
+  leaveModalError.textContent    = '';
+  leaveModalBackdrop.style.display = 'flex';
+});
+
+function closeLeaveModal() { leaveModalBackdrop.style.display = 'none'; }
+
+leaveModalCancelBtn.addEventListener('click', closeLeaveModal);
+leaveModalBackdrop.addEventListener('click', e => { if (e.target === leaveModalBackdrop) closeLeaveModal(); });
+
+leaveModalConfirmBtn.addEventListener('click', async () => {
+  leaveModalConfirmBtn.disabled    = true;
+  leaveModalConfirmBtn.textContent = 'Leaving…';
+  leaveModalError.textContent      = '';
+
+  try {
+    await apiFetch(`/api/rooms/${state.activeRoomId}/leave`, { method: 'POST' });
+    closeLeaveModal();
+    // Remove the room from the sidebar and close the chat for this user.
+    state.rooms = state.rooms.filter(r => r._id !== state.activeRoomId);
+    state.activeRoomId  = null;
+    state.activeMembers = [];
+    renderRooms();
+    hideChatArea();
+  } catch (err) {
+    leaveModalError.textContent      = err.message;
+    leaveModalConfirmBtn.disabled    = false;
+    leaveModalConfirmBtn.textContent = 'Leave Room';
+  }
+});
+
 // ── Join Room modal ───────────────────────────────────────────────────────────
 
 // Accepts a full invite URL (https://…/join.html?code=xxx) or a bare code.
@@ -515,6 +559,14 @@ function connect() {
           state.activeMembers.push(member);
           renderMembers();
         }
+      }
+    }
+
+    if (msg.type === 'member_left') {
+      const { roomId, userId: leftUserId } = msg;
+      if (roomId === state.activeRoomId) {
+        state.activeMembers = state.activeMembers.filter(m => m._id.toString() !== leftUserId);
+        renderMembers();
       }
     }
 

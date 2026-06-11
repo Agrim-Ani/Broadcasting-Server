@@ -102,6 +102,28 @@ router.delete('/:id', requireAuth, async (req, res) => {
   res.status(204).send();
 });
 
+// POST /api/rooms/:id/leave — remove yourself from a room; owner must delete instead.
+router.post('/:id/leave', requireAuth, async (req, res) => {
+  const room = await Room.findOne({ _id: req.params.id, members: req.user.userId }).lean();
+  if (!room) return res.status(404).json({ error: 'room not found' });
+
+  if (room.createdBy.toString() === req.user.userId) {
+    return res.status(403).json({ error: 'owner cannot leave — delete the room instead' });
+  }
+
+  await Room.findByIdAndUpdate(req.params.id, { $pull: { members: req.user.userId } });
+
+  // Notify remaining members so their member panels update instantly.
+  const payload = { type: 'member_left', roomId: req.params.id, userId: req.user.userId };
+  for (const memberId of room.members) {
+    if (memberId.toString() !== req.user.userId) {
+      registry.sendToUser(memberId.toString(), payload);
+    }
+  }
+
+  res.status(204).send();
+});
+
 // GET /api/rooms/:id — full room details with populated member list.
 router.get('/:id', requireAuth, async (req, res) => {
   const room = await Room.findOne({ _id: req.params.id, members: req.user.userId })
